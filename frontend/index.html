@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TechTamizha Wallet</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+
+    <div class="header">
+        <h1>
+            <span class="purple">TechTamizha</span>
+            <span class="blue">Wallet</span>
+        </h1>
+
+    </div>
+
+    <!-- Connect -->
+
+    <button id="connectBtn">
+    Connect Wallet
+    </button>
+
+    <!-- Wallet -->
+
+    <div class="card">
+
+        <h3>
+
+            <i class="fa-solid fa-wallet"></i>
+
+            Wallet Address
+
+        </h3>
+
+        <div class="wallet-row">
+
+            <p id="walletAddress">
+                Not Connected
+            </p>
+
+            <button id="copyBtn">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Balance -->
+
+    <div class="card">
+
+        <h3>
+
+            <i class="fa-solid fa-coins"></i>
+
+            TTZ Balance
+
+        </h3>
+
+        <h2 id="balance">
+
+            0 TTZ
+
+        </h2>
+
+    </div>
+
+    <!-- Token Details -->
+
+    <div class="card">
+
+        <h3>
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            Token Details
+
+        </h3>
+
+        <div class="details">
+
+            <div>
+
+                <span>Name :</span>
+
+                <span id="tokenName">TechTamizha</span>
+
+            </div>
+
+            <div>
+
+                <span>Symbol :</span>
+
+                <span id="tokenSymbol">TTZ</span>
+
+            </div>
+
+            <div>
+
+                <span>Decimals :</span>
+
+                <span>18</span>
+
+            </div>
+
+            <div>
+
+                <span>Total Supply :</span>
+
+                <span id="totalSupply">Loading...</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Send -->
+
+    <div class="card">
+
+        <h3>
+
+            <i class="fa-regular fa-paper-plane"></i>
+
+            Send TechTamizha
+
+        </h3>
+
+        <input
+            type="text"
+            id="receiver"
+            placeholder="Receiver Address">
+
+        <input
+            type="number"
+            id="amount"
+            placeholder="Amount">
+
+        <button id="sendBtn">
+
+            Send TTZ
+
+        </button>
+
+    </div>
+
+    <!-- Transaction Pool -->
+
+    <div class="card">
+
+        <h3>
+
+            <i class="fa-solid fa-list-check"></i>
+
+            Pending Transactions
+
+        </h3>
+
+        <div id="transactionList" class="transaction-list">
+            <p class="empty-state">No Pending Transactions</p>
+        </div>
+
+    </div>
+
+    <!-- Proof of Work Mining -->
+    <div class="card mining-card">
+        <h3><i class="fa-solid fa-hammer"></i> Proof of Work Mining</h3>
+        <button id="mineBtn" class="mine-button"><i class="fa-solid fa-cube"></i> Mine Block</button>
+        <div class="mining-animation" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p id="miningStatus" class="mining-status">Ready to mine pending transactions</p>
+        <div class="mining-details">
+            <span>Current Nonce <strong id="miningNonce">0</strong></span>
+            <span>Difficulty <strong id="miningDifficulty">4</strong></span>
+            <span>Hashes Checked <strong id="hashesChecked">0</strong></span>
+            <span>Mining Time <strong id="miningTime">0.00 seconds</strong></span>
+            <span class="hash-row">Current Hash <strong id="miningHash">—</strong></span>
+        </div>
+        <div id="miningSuccess" class="mining-success" hidden></div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+
+<script src="abi.js"></script>
+
+<script src="script.js"></script>
+<script src="proofOfWork.js"></script>
+<script src="block.js"></script>
+<script src="mine.js"></script>
+
+</body>
+
+</html>

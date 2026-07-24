@@ -1,0 +1,24 @@
+{
+  "name": "myblockchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "hardhat": "^2.26.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1",
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "express": "^5.2.1"
+  }
+}
