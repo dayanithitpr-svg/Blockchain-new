@@ -39,10 +39,43 @@
             });
             const payload = await response.json();
             if (!response.ok) throw new Error(payload.error || "Unable to submit mined block");
+            if (!signer) {
+                throw new Error("Connect MetaMask before settling mined transactions.");
+            }
+
+            const settlementContract = new ethers.Contract(
+                contractAddress,
+                tokenABI,
+                signer
+            );
+
+            const connectedAddress = (await signer.getAddress()).toLowerCase();
+
+            for (const transaction of payload.block.transactions) {
+                if (transaction.sender.toLowerCase() !== connectedAddress) {
+                    throw new Error(
+                        "Path A can settle only transactions sent by the connected MetaMask account."
+                    );
+                }
+
+                const amountInWei = ethers.utils.parseUnits(
+                    transaction.amount.toString(),
+                    18
+                );
+
+                const transferTransaction = await settlementContract.transfer(
+                    transaction.receiver,
+                    amountInWei
+                );
+
+                await transferTransaction.wait();
+            }
             showSuccess(payload.block, result.elapsed);
             if (typeof window.loadPendingTransactions === "function") await window.loadPendingTransactions();
-        } catch (error) {
-            showError(error.message || "Mining failed.");
+       } catch (error) {
+    console.error("Mining Error:", error);
+    showError(error.message || "Mining failed.");
+
         } finally {
             mineButton.disabled = false;
         }
@@ -81,7 +114,7 @@
     function showSuccess(block, elapsed) {
         statusEl.textContent = "Mining Successful";
         successEl.hidden = false;
-        successEl.innerHTML = `<strong>Mining Successful</strong><span>Block Number: ${block.blockNumber}</span><span>Hash: ${escapeHtml(block.hash)}</span><span>Nonce: ${block.nonce.toLocaleString()}</span><span>Mining Time: ${formatDuration(elapsed)}</span><span>Reward: ${block.reward} TTZ (not issued)</span>`;
+        successEl.innerHTML = `<strong>Mining Successful</strong><span>Block Number: ${block.blockNumber}</span><span>Hash: ${escapeHtml(block.hash)}</span><span>Nonce: ${block.nonce.toLocaleString()}</span><span>Mining Time: ${formatDuration(elapsed)}</span><span>Reward: ${block.reward} TTZ</span>`;
     }
 
     function showError(message) { statusEl.textContent = message; }

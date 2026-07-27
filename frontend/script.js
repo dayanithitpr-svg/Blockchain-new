@@ -13,9 +13,8 @@ let signer;
 let contract;
 
 const transactionPoolApi = "http://localhost:3000";
-
-// Contract address
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const hardhatChainId = "0x7a69"; // 31337 in hexadecimal
+const hardhatRpcUrl = "http://127.0.0.1:8545";
 
 // Event Listeners
 connectBtn.addEventListener("click", connectWallet);
@@ -45,14 +44,39 @@ if (window.ethereum) {
     });
 }
 
+function getMetaMaskProvider() {
+    const providers = window.ethereum && window.ethereum.providers;
+    if (Array.isArray(providers)) {
+        return providers.find((walletProvider) => walletProvider.isMetaMask) || null;
+    }
+
+    return window.ethereum && window.ethereum.isMetaMask ? window.ethereum : null;
+}
+
+async function switchToHardhat(metaMaskProvider) {
+    try {
+        await metaMaskProvider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: hardhatChainId }]
+        });
+    } catch (error) {
+        if (error.code !== 4902) throw error;
+
+        await metaMaskProvider.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+                chainId: hardhatChainId,
+                chainName: "Hardhat Local",
+                rpcUrls: [hardhatRpcUrl],
+                nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 }
+            }]
+        });
+    }
+}
+
 async function loadTokenDetails() {
     try {
-        let readProvider;
-        if (window.ethereum) {
-            readProvider = new ethers.providers.Web3Provider(window.ethereum);
-        } else {
-            readProvider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
-        }
+        const readProvider = new ethers.providers.JsonRpcProvider(hardhatRpcUrl);
         const readContract = new ethers.Contract(
     contractAddress,
     tokenABI,
@@ -100,14 +124,17 @@ async function updateBalance(address) {
 async function connectWallet() {
     console.log("Connect button clicked");
 
-    if (!window.ethereum) {
+    const metaMaskProvider = getMetaMaskProvider();
+    if (!metaMaskProvider) {
         alert("Please install MetaMask");
         return;
     }
 
     try {
+        await switchToHardhat(metaMaskProvider);
+
         // MetaMask popup
-        const accounts = await window.ethereum.request({
+        const accounts = await metaMaskProvider.request({
             method: "eth_requestAccounts"
         });
 
@@ -115,14 +142,20 @@ async function connectWallet() {
         console.log("Connected:", address);
 
         // Ethers provider & signer
-        provider = new ethers.providers.Web3Provider(window.ethereum);
+        provider = new ethers.providers.Web3Provider(metaMaskProvider);
         signer = provider.getSigner();
 
         const network = await provider.getNetwork();
-console.log("Chain ID:", network.chainId);
+        if (network.chainId !== 31337) {
+            throw new Error(`Expected Hardhat chain 31337, received ${network.chainId}`);
+        }
+        console.log("Chain ID:", network.chainId);
 
-const code = await provider.getCode(contractAddress);
-console.log("Contract Code:", code);
+        const code = await provider.getCode(contractAddress);
+        console.log("Contract Code:", code);
+        if (code === "0x") {
+            throw new Error("TTZ contract is not deployed on Hardhat Local at the configured address");
+        }
 
         contract = new ethers.Contract(
             contractAddress,

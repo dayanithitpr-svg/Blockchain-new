@@ -12,4 +12,7 @@ contract MemeCoin is ERC20, Ownable {
     {
         _mint(initialOwner, 1000000000 * 10 ** decimals());
     }
+    function mintReward(address miner) external onlyOwner {
+    _mint(miner, 10 * 10 ** decimals());
+}
 }

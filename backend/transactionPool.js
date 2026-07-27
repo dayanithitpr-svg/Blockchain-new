@@ -50,11 +50,6 @@ class TransactionPool {
                 return this.#fail("Duplicate pending transaction", "duplicate rejected");
             }
 
-            const balanceError = this.#verifyBalance(normalised);
-            if (balanceError) {
-                return this.#fail(balanceError, "balance verification failed");
-            }
-
             const pendingTransaction = {
                 id: crypto.randomUUID(),
                 ...normalised,

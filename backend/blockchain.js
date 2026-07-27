@@ -28,6 +28,15 @@ class Blockchain {
         return this.blocks[this.blocks.length - 1];
     }
 
+    /** Updates the reward on an already committed block. */
+    updateBlockReward(blockNumber, reward) {
+        const index = this.blocks.findIndex((block) => block.blockNumber === blockNumber);
+        if (index === -1) return null;
+
+        this.blocks[index] = Object.freeze({ ...this.blocks[index], reward });
+        return this.blocks[index];
+    }
+
     /** Returns copies so API consumers cannot mutate the chain. */
     getAll() {
         return this.blocks.map((block) => ({ ...block, transactions: [...block.transactions] }));
