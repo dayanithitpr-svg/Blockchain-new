@@ -204,8 +204,17 @@ async function sendToken() {
     }
 
     try {
-        console.log("Sending transaction...");
-        const sender = await signer.getAddress();
+       console.log("Sending transaction...");
+
+// Send TTZ on-chain
+const tx = await contract.transfer(
+    receiver,
+    ethers.utils.parseUnits(amount.toString(), 18)
+);
+
+await tx.wait();
+
+const sender = await signer.getAddress();
         const response = await fetch(`${transactionPoolApi}/transaction`, {
             method: "POST",
             headers: {
@@ -219,11 +228,13 @@ async function sendToken() {
         if (!response.ok) {
             throw new Error(result.error || "Unable to add transaction");
         }
+alert("TTZ sent successfully!");
 
-        alert("Transaction added to Transaction Pool");
-        document.getElementById("receiver").value = "";
-        document.getElementById("amount").value = "";
-        await loadPendingTransactions();
+document.getElementById("receiver").value = "";
+document.getElementById("amount").value = "";
+
+await updateBalance(await signer.getAddress());            // Refresh wallet balance
+await loadPendingTransactions();  // Refresh transaction pool
     } catch (error) {
         console.error(error);
         alert(`Transaction Pool Error: ${error.message}`);
